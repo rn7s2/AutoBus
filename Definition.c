@@ -56,10 +56,3 @@ Instruction read_event();
 void start(int direction);
 void park();
 void stop();
-
-
-
-
-
-
-

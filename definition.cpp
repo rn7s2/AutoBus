@@ -1,10 +1,11 @@
+                                //data :2022/5/15
 #include<stdio.h>
 #include<string.h>
 #include<math.h>
 #include "malloc.h"
 #include <stdlib.h>
 
-#define  MAX_LEN 10             //最大数组元素数    
+#define  MAX_LEN 10            //最大数组元素数    
             	  
 enum Strategy {                // 策略
     FCFS,	                   //先来先服务策略

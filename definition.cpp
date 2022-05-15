@@ -1,3 +1,5 @@
+                                //author :Rn_7s2
+                                // written :SunZhengjun
                                 //data :2022/5/15
 #include<stdio.h>
 #include<string.h>

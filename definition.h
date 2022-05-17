@@ -29,24 +29,4 @@ typedef struct {               // 指令
     int station;     	       // 如果type为2, 3, 4，则为站点，否则无意义
 } Instruction;
 
-void dispatch(Instruction t);
-void read_config();
-void report();
-void fcfs_clock_tick();
-void fcfs_primary_request(int direction, int station);
-void fcfs_secondary_request(int target);
-void fcfs_work_end();
-void sstf_clock_tick();
-void sstf_primary_request(int direction, int station);
-void sstf_secondary_request(int target);
-void sstf_work_end();
-void scan_clock_tick();
-void scan_primary_request(int direction, int station);
-void scan_secondary_request(int target);
-void scan_work_end();
-Instruction read_event();
-void start(int direction);
-void park();
-void stop();
-
 #endif

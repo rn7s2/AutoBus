@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "definition.h"
+#include "input.h"
 
 Instruction read_event()
 {

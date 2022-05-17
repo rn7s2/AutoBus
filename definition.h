@@ -18,7 +18,8 @@ typedef struct {               // 全局配置
 } Config;
 
 typedef struct {               // 全局状态
-    int last_state, state, time, position;
+    int last_state, state;
+    int time, position;
     struct ListNode* requests;
     int target[MAX_LEN];
     int clockwise_request[MAX_LEN];

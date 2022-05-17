@@ -13,8 +13,7 @@ int main(int argc, char *argv[])
 
 void init_state()
 {
-    state.primary_requests = new_node(-1);
-    state.secondary_requests = new_node(-1);
+    state.requests = new_node(-1);
 }
 
 void dispatch(Instruction t)

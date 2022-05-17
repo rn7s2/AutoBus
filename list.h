@@ -2,7 +2,7 @@
 #define _LIST_H
 
 struct ListNode {
-    int val;
+    int val, is_primary;
     struct ListNode* next;
 };
 

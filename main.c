@@ -1,13 +1,20 @@
 #include <stdio.h>
 #include "main.h"
+#include "list.h"
 
-Config config;             // 全局配置
-State state = { 0 };       // 全局状态
+Config config;     // 全局配置
+State state;       // 全局状态
 
 int main(int argc, char *argv[])
 {
     printf("Hello, world!\n");
     return 0;
+}
+
+void init_state()
+{
+    state.primary_requests = new_node(-1);
+    state.secondary_requests = new_node(-1);
 }
 
 void dispatch(Instruction t)

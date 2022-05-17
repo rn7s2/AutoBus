@@ -4,12 +4,12 @@
 #ifndef _DEFINITION_H
 #define _DEFINITION_H
 
-#define MAX_LEN 10            //最大数组元素数
+#define MAX_LEN 10             // 最大数组元素数
 
 enum Strategy {                // 策略
-    FCFS,	                   //先来先服务策略
-    SSTF,                      //最短寻找时间优先算法
-    SCAN                       //顺便服务策略
+    FCFS,	                   // 先来先服务策略
+    SSTF,                      // 最短寻找时间优先算法
+    SCAN                       // 顺便服务策略
 };
 
 typedef struct {               // 全局配置
@@ -18,7 +18,9 @@ typedef struct {               // 全局配置
 } Config;
 
 typedef struct {               // 全局状态
-    int position;
+    int state, time, position;
+    struct ListNode* primary_requests;
+    struct ListNode* secondary_requests;
     int target[MAX_LEN];
     int clockwise_request[MAX_LEN];
     int counterclockwise_request[MAX_LEN];

@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include "input.h"
+#include<stdlib.h>
 
 Instruction read_event()
 {
     Instruction read;
-    int type1 = 5, b = 3;
+    int type1 = 5, b = 3,c=0;
     int station1 = 0;
     char str[30];
+    char str1[3];
     gets(str);
     if (str[0] == 'e')
         type1 = 0;
@@ -22,17 +24,14 @@ Instruction read_event()
             type1 = 3;
     }
     for(b = 6; type1 != 0 && type1 != 1 && str[b] != '\0'; b++) {
-        if (str[b] >= '2' && str[b] <= '9')
-            station1 = (int) str[b];
-        else if(str[b] == '1') {
-            if(str[b + 1] == '0') {
+        if (str[b] >= '1' && str[b] <= '9')
+            {for(c = 0; str[b] != '\0' && str[b] >= '1' && str[b] <= '9'; b++, c++)
+                str1[c] = str[b];
+            break;
+            }
 
-                station1 = 10;
-                break;
-            } else
-                station1 = 1;
-        }
     }
+    station1=atoi(str1);
     read.station = station1;
     read.type = type1;
     return read;

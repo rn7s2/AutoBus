@@ -5,6 +5,7 @@
 #define _DEFINITION_H
 
 #define MAX_LEN 10             // 最大数组元素数
+#define MAX_BUF 100 + 1
 
 enum Strategy {                // 策略
     FCFS,	                   // 先来先服务策略

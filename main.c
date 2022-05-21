@@ -17,10 +17,13 @@ int main(int argc, char *argv[])
     read_config();
 
     // 主循环，读取-分派（执行策略）-报告
-    while (state.last_state != -1 && state.state != 0) {
+    while (1) {
         Instruction t = read_event();
         dispatch(t);
         if (t.type == 0) {
+            break;
+        }
+        if (t.type == 1) {
             report();
         }
     }
@@ -142,40 +145,37 @@ void dispatch(Instruction t)
 // 读取配置文件
 void read_config()
 {
-    // 不合格，请重写
-    /*
-    Config *ptr = NULL;
-    ptr = malloc(sizeof(Config)); // 为Config的三个量开辟空间
-    char Identify_1, Identify_2, Identify_3,
-         buf; // 这四个量都没用，只是走个过场，用来剔除注释与没用的部分
+    FILE* fin = fopen("dict.dic", "r");
+    char buf[MAX_BUF] = {};
 
-    FILE* fptr;                                                                 //打开文件，若失败，输出Open dict.dic error!
-    if ((fptr = fopen("dict.dic", "r")) == NULL) {
-        printf("Open dict.dic error!\n");
-    } else {
-        while(r != EOF) {
-            if(r != '#') {
-                if(fscanf( r, "%s", Identify_1 ) ==
-                        "TOTAL_STATION = ") {           //识别TOTAL_STATION = 后的数
-                    fscanf(r, "%d\n", ptr ->TOTAL_STATION );
-                }
-                if(fscanf( r, "%s", Identify_2 ) ==
-                        "distance = ") {                //识别distance = 后的数
-                    fscanf(r, "%d\n", ptr ->distance );
-                }
-                if(fscanf( r, "%s", Identify_3 ) ==
-                        "Strategy strategy = ") {       //识别Strategy strategy = 后的字符
-                    fscanf(r, "%s\n", ptr ->Strategy strategy );
-                }
-            } else {
-                fsanf(fp, "%[^\n]\n",
-                      buf);                                         //fscanf跳行,去除注释
-            }
+    if(fin == NULL)
+        return;
 
+    while (fgets(buf, MAX_BUF, fin)) {
+        char* right = NULL;
+        switch (buf[0]) {
+            case 'T':
+                right = strrchr(buf, ' '), right++;
+                config.total_station = atoi(right);
+                break;
+            case 'S':
+                right = strrchr(buf, ' '), right++;
+                if (!strcmp(right, "FCFS")) {
+                    config.strategy = FCFS;
+                } else if (!strcmp(buf, "SSTF")) {
+                    config.strategy = SSTF;
+                } else {
+                    config.strategy = SCAN;
+                }
+                break;
+            case 'D':
+                right = strrchr(buf, ' '), right++;
+                config.distance = atoi(right);
+                break;
+            default:
+                continue;
         }
     }
 
-    fclose(fptr);                                                               //关闭文件
-    return 0;
-    */
+    fclose(fin);
 }

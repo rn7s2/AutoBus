@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 #include "definition.h"                                                         //2022.5.21 
                                                                                 //SunZhengjun
+=======
+#include "definition.h"
+#include "report.h"
+
+>>>>>>> 30fa7cd2164ddf8fbbe63700f9d9300504972f35
 extern State state;
 
 void report()
@@ -57,5 +63,6 @@ printf("counterclockwise: ");
 		printf("%d", p->data);
 		p = p->next;
 	} while (1);
+
 
 }

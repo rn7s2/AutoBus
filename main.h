@@ -3,6 +3,7 @@
 
 #include "definition.h"
 
+void init_state();
 void dispatch(Instruction t);
 void read_config();
 

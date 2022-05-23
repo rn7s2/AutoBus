@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "definition.h"
 #include "report.h"
 

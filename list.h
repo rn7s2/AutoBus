@@ -6,10 +6,10 @@ struct ListNode {
     struct ListNode* next;
 };
 
-struct ListNode* new_node(int);
-int get_first_node_val(struct ListNode*);
-void remove_first_node(struct ListNode*);
-void append_new_node(int);
-void free_list(struct ListNode* head);
+struct ListNode* list_node_new(int);
+int list_first_node_get_val(struct ListNode*);
+void list_first_node_remove(struct ListNode*);
+void list_node_new_append(int);
+void list_free(struct ListNode* head);
 
 #endif

@@ -16,10 +16,21 @@ int main(int argc, char *argv[])
     init_state();
     read_config();
 
+#ifdef __DEBUG__
+    FILE* fin = fopen("test.in", "r");
+    if (fin == NULL) {
+        return 1;
+    }
+#endif
+
     // 主循环，读取-分派（执行策略）-报告
     while (1) {
-        Instruction t = read_event();
-        dispatch(t);
+#ifdef __DEBUG__
+        Instruction t = read_event(fin);
+#else
+        Instruction t = read_event(stdin);
+#endif
+        //dispatch(t);
         if (t.type == 0) {
             break;
         }
@@ -27,6 +38,11 @@ int main(int argc, char *argv[])
             report();
         }
     }
+
+#ifdef __DEBUG__
+    fclose(fin);
+#endif    
+    list_free(state.requests);
 
     return 0;
 }
@@ -37,7 +53,7 @@ void init_state()
     state.last_state = -1;
     state.state = 0;
     state.time = state.position = 0;
-    state.requests = new_node(-1);
+    state.requests = list_node_new(-1);
     memset(state.target, 0, sizeof(state.target));
     memset(state.clockwise_request, 0, sizeof(state.clockwise_request));
     memset(state.counterclockwise_request, 0,

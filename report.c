@@ -17,7 +17,7 @@ void report()
         printf("%d", state.clockwise_request[i]);
     printf("\n");
     
-    printf("counterclockwise: ");
+    printf("counterclockwise:");
     for (int i = 0; i < config.total_station; i++)
         printf("%d", state.counterclockwise_request[i]);
     printf("\n");

@@ -56,7 +56,7 @@ void init_state()
     state.last_state = -1;
     state.state = 0;
     state.time = state.position = 0;
-    state.requests = list_node_new(-1);
+    state.requests = list_node_new(-1, -1);
     memset(state.target, 0, sizeof(state.target));
     memset(state.clockwise_request, 0, sizeof(state.clockwise_request));
     memset(state.counterclockwise_request, 0,

@@ -29,7 +29,7 @@ void list_first_node_remove(struct ListNode* head)
 void list_node_new_append(struct ListNode* head, int val, int type)
 {
     struct ListNode* cur = head;
-    while (head->next) {
+    while (cur->next) {
         cur = cur->next;
     }
     cur->next = list_node_new(val, type);

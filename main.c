@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    report();
+
     // 主循环，读取-分派（执行策略）-报告
     while (1) {
 #ifdef __DEBUG__

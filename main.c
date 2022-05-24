@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    report();
+
     // 主循环，读取-分派（执行策略）-报告
     while (1) {
 #ifdef __DEBUG__
@@ -30,8 +32,9 @@ int main(int argc, char *argv[])
 #else
         Instruction t = read_event(stdin);
 #endif
-        if (t.type >= 0 && t.type <= 4)
+        if (t.type >= 0 && t.type <= 4) {
             dispatch(t);
+        }
         if (t.type == 0) {
             break;
         }

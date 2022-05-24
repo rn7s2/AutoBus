@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
 #else
         Instruction t = read_event(stdin);
 #endif
-        //dispatch(t);
+        if (t.type >= 0 && t.type <= 4)
+            dispatch(t);
         if (t.type == 0) {
             break;
         }
@@ -41,7 +42,7 @@ int main(int argc, char *argv[])
 
 #ifdef __DEBUG__
     fclose(fin);
-#endif    
+#endif
     list_free(state.requests);
 
     return 0;

@@ -26,6 +26,20 @@ void list_first_node_remove(struct ListNode* head)
     free(first_node), first_node = NULL;
 }
 
+void list_node_remove(struct ListNode* head, int val, int type)
+{
+    struct ListNode* cur = head->next;
+    struct ListNode* lst = head;
+    while (cur) {
+        if (cur->val == val && cur->type == type) {
+            lst->next = cur->next;
+            free(cur), cur = NULL;
+            break;
+        }
+        lst = cur, cur = cur->next;
+    }
+}
+
 void list_node_new_append(struct ListNode* head, int val, int type)
 {
     struct ListNode* cur = head;
@@ -33,6 +47,16 @@ void list_node_new_append(struct ListNode* head, int val, int type)
         cur = cur->next;
     }
     cur->next = list_node_new(val, type);
+}
+
+int list_length(struct ListNode* head)
+{
+    int ans = 0;
+    while (head->next) {
+        head = head->next;
+        ++ans;
+    }
+    return ans;
 }
 
 void list_free(struct ListNode* head)

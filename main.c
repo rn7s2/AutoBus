@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
             dispatch(t);
         }
         if (t.type == 0) {
+            report();
+            puts("end");
             break;
         }
         if (t.type == 1) {
@@ -56,6 +58,7 @@ void init_state()
 {
     state.last_state = -1;
     state.state = 0;
+    state.current_target = -1;
     state.time = state.position = 0;
     state.requests = list_node_new(-1, -1);
     memset(state.target, 0, sizeof(state.target));
@@ -73,8 +76,6 @@ void fcfs_dispatch(Instruction t)
 {
     switch (t.type) {
         case 0:
-            fcfs_work_end();
-            break;
         case 1:
             fcfs_clock_tick();
             break;
@@ -98,8 +99,6 @@ void sstf_dispatch(Instruction t)
 {
     switch (t.type) {
         case 0:
-            sstf_work_end();
-            break;
         case 1:
             sstf_clock_tick();
             break;
@@ -123,8 +122,6 @@ void scan_dispatch(Instruction t)
 {
     switch (t.type) {
         case 0:
-            scan_work_end();
-            break;
         case 1:
             scan_clock_tick();
             break;

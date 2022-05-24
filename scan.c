@@ -5,8 +5,6 @@
 extern Config config;
 extern State state;
 
-SCAN_State scan_state;
-
 int less_than_halfway(int from, int to, int direction)
 {
     int h = config.total_station / 2;
@@ -24,11 +22,6 @@ int less_than_halfway(int from, int to, int direction)
             return (1 <= to && to <= from - h) || (from <= to && to <= t);
         }
     }
-}
-
-void scan_init()
-{
-    scan_state.target = -1;
 }
 
 void scan_clock_tick()
@@ -66,23 +59,27 @@ void scan_clock_tick()
                 list_node_remove(state.requests, station, 2);
             }
 
-            if (scan_state.target == station) { // target reached, set next one
-                scan_state.target = -1;
+            // target reached, set next one
+            if (state.current_target == station) {
+                state.current_target = -1;
                 if (list_length(state.requests) == 0) { // no requests currently
                     state.last_state = 2;
                     state.state = 0;
                 } else {
-                    scan_state.target = list_first_node_get_val(state.requests);
+                    state.current_target
+                        = list_first_node_get_val(state.requests);
                     if (state.last_state == 1) { // counterclockwise
                         state.last_state = 2;
-                        if (less_than_halfway(station, scan_state.target, -1)) {
+                        if (less_than_halfway(station,
+                                              state.current_target, -1)) {
                             state.state = 1;
                         } else {
                             state.state = 3;
                         }
                     } else if (state.last_state == 3) { // clockwise
                         state.last_state = 2;
-                        if (less_than_halfway(station, scan_state.target, 1)) {
+                        if (less_than_halfway(station,
+                                              state.current_target, 1)) {
                             state.state = 3;
                         } else {
                             state.state = 1;
@@ -136,8 +133,8 @@ void scan_primary_request(int direction, int station)
 
         if (state.state == 0) {
             state.last_state = 0;
-            scan_state.target = station;
-            if (less_than_halfway(now_station, scan_state.target, 1)) {
+            state.current_target = station;
+            if (less_than_halfway(now_station, state.current_target, 1)) {
                 state.state = 3;
             } else {
                 state.state = 1;
@@ -159,8 +156,8 @@ void scan_secondary_request(int target)
 
         if (state.state == 0) {
             state.last_state = 0;
-            scan_state.target = target;
-            if (less_than_halfway(now_station, scan_state.target, 1)) {
+            state.current_target = target;
+            if (less_than_halfway(now_station, state.current_target, 1)) {
                 state.state = 3;
             } else {
                 state.state = 1;

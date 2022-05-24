@@ -20,7 +20,7 @@ typedef struct {               // 全局配置
 
 typedef struct {               // 全局状态
     int last_state, state;
-    int time, position;
+    int time, position, current_target;
     struct ListNode* requests;
     int target[MAX_LEN];
     int clockwise_request[MAX_LEN];

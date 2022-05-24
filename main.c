@@ -32,9 +32,11 @@ int main(int argc, char *argv[])
 #else
         Instruction t = read_event(stdin);
 #endif
-        if (t.type > 0 && t.type <= 4)
+        if (t.type >= 0 && t.type <= 4)
             dispatch(t);
         if (t.type == 0) {
+            report();
+            puts("end");
             break;
         }
         if (t.type == 1) {
@@ -71,6 +73,7 @@ void init_state()
 void fcfs_dispatch(Instruction t)
 {
     switch (t.type) {
+        case 0:
         case 1:
             fcfs_clock_tick();
             break;
@@ -93,6 +96,7 @@ void fcfs_dispatch(Instruction t)
 void sstf_dispatch(Instruction t)
 {
     switch (t.type) {
+        case 0:
         case 1:
             sstf_clock_tick();
             break;
@@ -115,6 +119,7 @@ void sstf_dispatch(Instruction t)
 void scan_dispatch(Instruction t)
 {
     switch (t.type) {
+        case 0:
         case 1:
             scan_clock_tick();
             break;

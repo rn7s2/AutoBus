@@ -142,6 +142,10 @@ void dispatch(Instruction t)
 // 读取配置文件
 void read_config()
 {
+     
+    
+    
+    
     // 不合格，请重写
     /*
     Config *ptr = NULL;

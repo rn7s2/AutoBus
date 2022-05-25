@@ -1,4 +1,7 @@
 *.o
+*.in
+*.out
+*.dic
 *.exe
 *.layout
 *.win

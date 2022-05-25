@@ -3,6 +3,6 @@
 
 #include "definition.h"
 
-Instruction read_event();
+Instruction read_event(FILE* fin);
 
 #endif

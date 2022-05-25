@@ -1,31 +1,38 @@
+#include "definition.h"
 #include "bus_control.h"
-#include<stdio.h>
+#include <stdio.h>
+
+extern State state;
+extern Config config;
+
 void start(int direction)
 {
-    if(direction == 1) {
-        State.last_state = State.state;
-        State.state = 4;
-        if(State.position == Config.distance * total_station - 1)
-            State.position = 0;
+    if (direction == 1) {
+        state.last_state = state.state;
+        state.state = 4;
+        if(state.position == config.distance * config.total_station - 1)
+            state.position = 0;
         else
-            State.position++;
-    } else if(direction == -1) {
-        State.last_state = State.state;
-        State.state = 2;
-        if(State.position == 0)
-            State.position == Config.distance*total_station - 1;
+            state.position++;
+    } else if (direction == -1) {
+        state.last_state = state.state;
+        state.state = 2;
+        if (state.position == 0)
+            state.position == config.distance * config.total_station - 1;
         else
-            State.position--;
+            state.position--;
     }
 }
+
 void stop()
 {
-    State.last_state = State.state;
-    State.state = 1;
+    state.last_state = state.state;
+    state.state = 1;
 }
+
 void park()
 {
-    State.last_state = State.state;
-    State.state = 3;
-    State.target[State.position/Config.distance]=0;
+    state.last_state = state.state;
+    state.state = 3;
+    state.target[state.position / config.distance] = 0;
 }

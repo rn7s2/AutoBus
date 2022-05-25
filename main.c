@@ -16,14 +16,39 @@ int main(int argc, char *argv[])
     init_state();
     read_config();
 
+#ifdef __DEBUG__
+    FILE* fin = fopen("test.in", "r");
+    if (fin == NULL) {
+        return 1;
+    }
+#endif
+
+    report();
+
     // 主循环，读取-分派（执行策略）-报告
-    while (state.last_state != -1 && state.state != 0) {
-        Instruction t = read_event();
-        dispatch(t);
+    while (1) {
+#ifdef __DEBUG__
+        Instruction t = read_event(fin);
+#else
+        Instruction t = read_event(stdin);
+#endif
+        if (t.type >= 0 && t.type <= 4) {
+            dispatch(t);
+        }
         if (t.type == 0) {
+            report();
+            puts("end");
+            break;
+        }
+        if (t.type == 1) {
             report();
         }
     }
+
+#ifdef __DEBUG__
+    fclose(fin);
+#endif
+    list_free(state.requests);
 
     return 0;
 }
@@ -33,8 +58,9 @@ void init_state()
 {
     state.last_state = -1;
     state.state = 0;
+    state.current_target = -1;
     state.time = state.position = 0;
-    state.requests = new_node(-1);
+    state.requests = list_node_new(-1, -1);
     memset(state.target, 0, sizeof(state.target));
     memset(state.clockwise_request, 0, sizeof(state.clockwise_request));
     memset(state.counterclockwise_request, 0,
@@ -50,8 +76,6 @@ void fcfs_dispatch(Instruction t)
 {
     switch (t.type) {
         case 0:
-            fcfs_work_end();
-            break;
         case 1:
             fcfs_clock_tick();
             break;
@@ -75,8 +99,6 @@ void sstf_dispatch(Instruction t)
 {
     switch (t.type) {
         case 0:
-            sstf_work_end();
-            break;
         case 1:
             sstf_clock_tick();
             break;
@@ -100,8 +122,6 @@ void scan_dispatch(Instruction t)
 {
     switch (t.type) {
         case 0:
-            scan_work_end();
-            break;
         case 1:
             scan_clock_tick();
             break;
@@ -142,6 +162,7 @@ void dispatch(Instruction t)
 // 读取配置文件
 void read_config()
 {
+<<<<<<< HEAD
      
     
     
@@ -175,11 +196,39 @@ void read_config()
                 fsanf(fp, "%[^\n]\n",
                       buf);                                         //fscanf跳行,去除注释
             }
+=======
+    FILE* fin = fopen("dict.dic", "r");
+    char buf[MAX_BUF] = {};
 
+    if(fin == NULL)
+        return;
+>>>>>>> 05a49b0d96a30c18e0ac31a823cb567f599ae248
+
+    while (fgets(buf, MAX_BUF, fin)) {
+        char* right = NULL;
+        switch (buf[0]) {
+            case 'T':
+                right = strrchr(buf, ' '), right++;
+                config.total_station = atoi(right);
+                break;
+            case 'S':
+                right = strrchr(buf, ' '), right++;
+                if (!strcmp(right, "FCFS")) {
+                    config.strategy = FCFS;
+                } else if (!strcmp(buf, "SSTF")) {
+                    config.strategy = SSTF;
+                } else {
+                    config.strategy = SCAN;
+                }
+                break;
+            case 'D':
+                right = strrchr(buf, ' '), right++;
+                config.distance = atoi(right);
+                break;
+            default:
+                continue;
         }
     }
 
-    fclose(fptr);                                                               //关闭文件
-    return 0;
-    */
+    fclose(fin);
 }

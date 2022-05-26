@@ -5,6 +5,7 @@
 extern Config config;
 extern State state;
 
+// FIX: Odd number of stations
 int less_than_halfway(int from, int to, int direction)
 {
     int h = config.total_station / 2;

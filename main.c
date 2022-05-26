@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
             dispatch(t);
         }
         if (t.type == 0) {
-            report();
             puts("end");
             break;
         }

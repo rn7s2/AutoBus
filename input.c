@@ -14,9 +14,14 @@ Instruction read_event(FILE* fin)
 
     fgets(str, MAX_BUF, fin);
 
+    int tmp = strlen(str) - 1;
+    while (str[tmp] == ' ' || str[tmp] == '\n') {
+        str[tmp] = '\0', --tmp;
+    }
+
     if (str[0] == 'e') {
         read.type = 0;
-    } else if (str[0] == 'c' && str[5] == '\n') {
+    } else if (str[0] == 'c' && str[5] == '\0') {
         read.type = 1;
     } else if (str[2] == 'u') {
         read.type = 2;

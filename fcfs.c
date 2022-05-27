@@ -1,4 +1,4 @@
-#include "list.h"
+#include "list.h"                                                               //2022.5.27 SunZhengjun
 #include "definition.h"
 #include "dispatcher.h"
 
@@ -7,20 +7,20 @@ extern State state;
 
 fcfs_clock_tick()
 {
-    state.time++;
+    state.time++;                                                               // Add time 
     switch (state.state) {
         
         case 1: {                                                               // Go counterclockwisely 
-        state.position--;
+        state.position--;                                                       // decrease position
         if (state.position < 0)
-                state.position = config.total_station * config.distance - 1;
+                state.position = config.total_station * config.distance - 1;    
             if (state.position % config.distance == 0) {                        // at a station
-                int station = state.position / config.distance + 1;
-                int need_to_stop = (state.counterclockwise_request[station]
-                                    + state.clockwise_request[station]
-                                    + state.target[station] >= 1);
-                if (need_to_stop == 1) {
-                    state.last_state = 1;
+                int station = state.position / config.distance + 1;             //Calculate position
+                int current_request_val =  list_first_node_get_val(state.requests);
+                int need_to_stop = ((station == state.current_target)           //If this station is either current_target 
+                                     + (station == current_request_val) >= 1 ); //or current_request , we stop .            
+                if (need_to_stop == 1) {                        
+                    state.last_state = 1;                                       //Change the state
                     state.state = 2;
                 }
             }
@@ -50,26 +50,19 @@ fcfs_clock_tick()
                     state.state = 0;
                 } else {
                     state.current_target = list_first_node_get_val(state.requests);
-                    if (state.last_state == 1) {                                // counterclockwise
-                        state.last_state = 2;
+                    state.last_state = 2;
+                    int current_direction = list_first_node_get_type(state.requests);
+                     if(current_direction == 0)   
+                     state.state = 1 ;
+                     if(current_direction == 1)
+                     state.state = 3 ;  
                         
-                        state.state = find_direction(state.requests);
-                        }
-                    } else if (state.last_state == 3) { // clockwise
-                        state.last_state = 2;
-                    //    if (less_than_halfway(station,
-                    //                          state.current_target, 1)) {
-                    //        state.state = 3;
-                    //    } else {
-                    //        state.state = 1;
-                        }
-                    }
                 }
             } else {
                 state.state = state.last_state;
                 state.last_state = 2;
             }
-        break;
+            break;
     } 
         
          case 3: {                                                              // Go clockwisely 
@@ -78,9 +71,8 @@ fcfs_clock_tick()
                 state.position = 0;
             if (state.position % config.distance == 0) { // at a station
                 int station = state.position / config.distance + 1;
-                int need_to_stop = (state.counterclockwise_request[station]
-                                    + state.clockwise_request[station]
-                                    + state.target[station] >= 1);
+                int need_to_stop = ((station == state.current_target) 
+                                     + (station == current_request_val) >= 1 ); 
                 if (need_to_stop == 1) {
                     state.last_state = 3;
                     state.state = 2;
@@ -95,37 +87,29 @@ fcfs_clock_tick()
 }
 
 
-
-fcfs_primary_request(int direction, int station)
+void scan_primary_request(int direction, int station)
 {
-    if (direction < 0) {
-            if (state.counterclockwise_request[station] == 1)
-                return;
+        if (direction < 0) {
             state.counterclockwise_request[station] = 1;
             list_node_new_append(state.requests, station, 0);
         } else {
-            if (state.clockwise_request[station] == 1)
-                return;
             state.clockwise_request[station] = 1;
             list_node_new_append(state.requests, station, 1);
         }
-        
+
         if (state.state == 0) {
             state.last_state = 0;
             state.current_target = station;
-        } 
+        }
 }
 
-
-
-fcfs_secondary_request(int target)
+void scan_secondary_request(int target)
 {
-    if (state.target[target] == 1)
-            return;
         state.target[target] = 1;
         list_node_new_append(state.requests, target, 2);
-        
+
         if (state.state == 0) {
             state.last_state = 0;
             state.current_target = target;
+        }
 }

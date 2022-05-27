@@ -45,7 +45,7 @@ void scan_clock_tick()
             int station = state.position / config.distance + 1;
             scan_request_complete(station); // complete requests
             if (state.current_target == station) { // target reached, set next
-                state.current_target = -1;
+                state.current_target = 0;
                 scan_find_target(station);
             } else { // restore to last_state
                 state.state = state.last_state;

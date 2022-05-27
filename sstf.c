@@ -1,10 +1,10 @@
+#include "definition.h"
 #include "dispatcher.h"
 
-void sstf_clock_tick() {}
-void sstf_primary_request(int direction, int station) {}
-void sstf_secondary_request(int target) {}
-int state.current_target = 0;
-int fflag()//找出最短路径
+extern State state;
+extern Config config;
+
+int fflag() // 找出最短路径
 {
     int a = 1;
     int b = 1;
@@ -24,12 +24,11 @@ int fflag()//找出最短路径
             b++;
         } else if(a == 0)
             break;
-
     }
     a = -1;
     while(1) {
         if(state.position / config.distance + a <= -1)
-            a = -(state.position / config.distance - config.total_station+1);
+            a = -(state.position / config.distance - config.total_station + 1);
         if(state.clockwise_request[state.position / config.distance + a] == 1
                 || state.counterclockwise_request[state.position / config.distance + a] == 1
                 || state.target[state.position / config.distance + a] == 1) {
@@ -40,7 +39,6 @@ int fflag()//找出最短路径
             c++;
         } else if(a == 0)
             break;
-
     }
     if(tipc == 1 && tipcc == 1 && c < b)
         return (-c);
@@ -49,6 +47,7 @@ int fflag()//找出最短路径
     if(tipc == 0)
         return 0;
 }
+
 void sstf_clock_tick()
 {
     state.time++;
@@ -103,6 +102,7 @@ void sstf_clock_tick()
     }
 
 }
+
 void sstf_primary_request(int direction, int station)
 {
     if(direction == 1)
@@ -120,12 +120,13 @@ void sstf_primary_request(int direction, int station)
     }//逻辑是如果clock（为停留的）后有更优解，那执行？？？？？？？
 
 }
+
 void sstf_secondary_request(int target)
 {
     state.target[target - 1] = 1;
     if(state.current_target == 0) {
         state.current_target = fflag();
-        if (flag > 0)
+        if (state.current_target > 0)
             state.state = 4;
         else if(state.current_target < 0)
             state.state = 2;

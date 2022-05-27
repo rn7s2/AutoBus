@@ -3,7 +3,7 @@
 void sstf_clock_tick() {}
 void sstf_primary_request(int direction, int station) {}
 void sstf_secondary_request(int target) {}
-int flag = 0;
+int state.current_target = 0;
 int fflag()//找出最短路径
 {
     int a = 1;
@@ -12,7 +12,7 @@ int fflag()//找出最短路径
     int tipc = 0;
     int tipcc = 0;
     while(1) {
-        if(state.position / config.distance + a >= 10)
+        if(state.position / config.distance + a >= config.total_station)
             a = -(state.position / config.distance);
         if(state.clockwise_request[state.position / config.distance + a] == 1
                 || state.counterclockwise_request[state.position / config.distance + a] == 1
@@ -29,7 +29,7 @@ int fflag()//找出最短路径
     a = -1;
     while(1) {
         if(state.position / config.distance + a <= -1)
-            a = -(state.position / config.distance - 9);
+            a = -(state.position / config.distance - config.total_station+1);
         if(state.clockwise_request[state.position / config.distance + a] == 1
                 || state.counterclockwise_request[state.position / config.distance + a] == 1
                 || state.target[state.position / config.distance + a] == 1) {
@@ -67,23 +67,23 @@ void sstf_clock_tick()
             state.position--;
     }
     if (state.state == 3 || state.state == 1) {
-        if(flag == 0) {
-            flag = fflag();
-            if (flag > 0)
+        if(state.current_target == 0) {
+            state.current_target = fflag();
+            if (state.current_target > 0)
                 state.state = 4;
-            else if(flag < 0)
+            else if(state.current_target < 0)
                 state.state = 2;
-            else if(flag == 0)
+            else if(state.current_target == 0)
                 state.state = 1;
         }//逻辑是如果clock（为停留的）后有更优解，那执行？？？？？？？
     }
     if (state.position % config.distance == 0 && state.state != 3) {
         if(state.state == 2) {
 
-            flag++;
+            state.current_target++;
         } else if(state.state == 4) {
 
-            flag--;
+            state.current_target--;
         }
         if (state.state == 2
                 &&             (state.target[state.position / config.distance] == 1 ||
@@ -109,13 +109,13 @@ void sstf_primary_request(int direction, int station)
         state.clockwise_request[station - 1] = 1;
     else if(direction == -1)
         state.counterclockwise_request[station - 1] = 1;
-    if(flag == 0) {
-        flag = fflag();
-        if (flag > 0)
+    if(state.current_target == 0) {
+        state.current_target = fflag();
+        if (state.current_target > 0)
             state.state = 4;
-        else if(flag < 0)
+        else if(state.current_target < 0)
             state.state = 2;
-        else if(flag == 0)
+        else if(state.current_target == 0)
             state.state = 1;
     }//逻辑是如果clock（为停留的）后有更优解，那执行？？？？？？？
 
@@ -123,13 +123,13 @@ void sstf_primary_request(int direction, int station)
 void sstf_secondary_request(int target)
 {
     state.target[target - 1] = 1;
-    if(flag == 0) {
-        flag = fflag();
+    if(state.current_target == 0) {
+        state.current_target = fflag();
         if (flag > 0)
             state.state = 4;
-        else if(flag < 0)
+        else if(state.current_target < 0)
             state.state = 2;
-        else if(flag == 0)
+        else if(state.current_target == 0)
             state.state = 1;
     }//逻辑是如果clock（为停留的）后有更优解，那执行？？？？？？？
 }

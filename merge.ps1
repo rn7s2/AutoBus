@@ -2,7 +2,7 @@
 # This script is intended to merge sources into a single .C file.
 
 $outFileName = "../output.c";
-$headers = @("list.h", "definition.h", "main.h", "report.h", "input.h", "dispatcher.h", "bus_control.h");
+$headers = @("list.h", "definition.h", "main.h", "report.h", "input.h", "dispatcher.h");
 $include = @("#include <stdio.h>", "#include <stdlib.h>", "#include <string.h>", "");
 $include | Out-File $outFileName;
 

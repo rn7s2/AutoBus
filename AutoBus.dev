@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=1
 CompilerSettings=0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
-UnitCount=15
+UnitCount=13
 
 [VersionInfo]
 Major=1
@@ -100,18 +100,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
-FileName=bus_control.h
-CompileCpp=0
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit10]
-FileName=list.h
+FileName=input.h
 CompileCpp=0
 Folder=
 Compile=1
@@ -121,7 +111,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=bus_control.c
+FileName=list.c
 CompileCpp=0
 Folder=
 Compile=1
@@ -151,7 +141,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit11]
-FileName=list.c
+FileName=report.h
 CompileCpp=0
 Folder=
 Compile=1
@@ -161,7 +151,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=input.h
+FileName=fcfs.c
 CompileCpp=0
 Folder=
 Compile=1
@@ -171,7 +161,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=report.h
+FileName=sstf.c
 CompileCpp=0
 Folder=
 Compile=1
@@ -192,6 +182,16 @@ BuildCmd=
 
 [Unit15]
 FileName=sstf.c
+CompileCpp=0
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit8]
+FileName=list.h
 CompileCpp=0
 Folder=
 Compile=1

@@ -181,7 +181,7 @@ void read_config()
                 right = strrchr(buf, ' '), right++;
                 if (!strcmp(right, "FCFS")) {
                     config.strategy = FCFS;
-                } else if (!strcmp(buf, "SSTF")) {
+                } else if (!strcmp(right, "SSTF")) {
                     config.strategy = SSTF;
                 } else {
                     config.strategy = SCAN;

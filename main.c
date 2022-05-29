@@ -166,6 +166,12 @@ void read_config()
 
     while (fgets(buf, MAX_BUF, fin)) {
         char* right = NULL;
+
+        int tmp = strlen(buf) - 1;
+        while (buf[tmp] == ' ' || buf[tmp] == '\n') {
+            buf[tmp] = '\0', --tmp;
+        }
+
         switch (buf[0]) {
             case 'T':
                 right = strrchr(buf, ' '), right++;

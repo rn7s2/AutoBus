@@ -2,7 +2,7 @@
 #include "dispatcher.h"
 extern State state;
 extern Config config;
-
+int flag=0,flag1=0;
 int fflag() // 找出最短路径
 {
     int a = 1;
@@ -13,31 +13,33 @@ int fflag() // 找出最短路径
     while(1) {
         if(state.position / config.distance + a >= config.total_station)
             a = -(state.position / config.distance);
-        if(state.clockwise_request[state.position / config.distance + a] == 1
-                || state.counterclockwise_request[state.position / config.distance + a] == 1
-                || state.target[state.position / config.distance + a] == 1) {
+            if(a == 0)
+            break;
+        if(state.clockwise_request[state.position / config.distance + a+1] == 1
+                || state.counterclockwise_request[state.position / config.distance + a+1] == 1
+                || state.target[state.position / config.distance + a+1] == 1) {
             tipc = 1;
             break;
         } else if(a != 0) {
             a++;
             b++;
-        } else if(a == 0)
-            break;
+        } 
     }
 
     while(1) {
         if(state.position / config.distance + d <= -1)
             d = -(state.position / config.distance - config.total_station + 1);
-        if(state.clockwise_request[state.position / config.distance + d] == 1
-                || state.counterclockwise_request[state.position / config.distance + d] == 1
-                || state.target[state.position / config.distance + d] == 1) {
+            if(d == 0)
+            break;
+        if(state.clockwise_request[state.position / config.distance + d+1] == 1
+                || state.counterclockwise_request[state.position / config.distance + d+1] == 1
+                || state.target[state.position / config.distance + d+1] == 1) {
             tipcc = 1;
             break;
         } else if(d != 0) {
             d--;
             c++;
-        } else if(d == 0)
-            break;
+        } 
     }
     if(tipc == 1 && tipcc == 1 && c < b)
         return (-c);
@@ -93,46 +95,67 @@ void sstf_clock_tick()
 
             state.current_target--;
         }
-        if (state.state == 1
-                &&             (state.target[state.position / config.distance] == 1 ||
-                                state.counterclockwise_request[state.position / config.distance] == 1)) {
+        if ((state.state == 1
+                &&             (state.target[state.position / config.distance+1] == 1 ||
+                                state.counterclockwise_request[state.position / config.distance+1] == 1))||state.current_target==0) {
             state.state = 2;
-            state.target[state.position / config.distance] = 0;
-            state.counterclockwise_request[state.position / config.distance] = 0;
+            flag=1;
+
             if (state.current_target==0)
             {
-                state.clockwise_request[state.position / config.distance] = 0;
+                flag1=1;
+                
             }
         }
-        else if (state.state == 3
-                &&             (state.target[state.position / config.distance] == 1 ||
-                                state.clockwise_request[state.position / config.distance] == 1)) {
+        else if ((state.state == 3
+                &&             (state.target[state.position / config.distance+1] == 1 ||
+                                state.clockwise_request[state.position / config.distance+1] == 1))||state.current_target==0) {
             state.state = 2;
-            state.target[state.position / config.distance] = 0;
-            state.clockwise_request[state.position / config.distance] = 0;
+            flag=3;
+            
             if (state.current_target==0)
             {
-                state.counterclockwise_request[state.position / config.distance] = 0;
+                flag1=1;
+                
             }
         }
 
     }
-
+if(state.position % config.distance == 0 && state.last_state == 2){
+    if (flag1==1){
+    
+     state.counterclockwise_request[state.position / config.distance+1] = 0;
+     state.target[state.position / config.distance+1] = 0;
+            state.clockwise_request[state.position / config.distance+1] = 0;}
+            else 
+            {
+                if (flag == 1)
+                {
+                     state.target[state.position / config.distance+1] = 0;
+            state.counterclockwise_request[state.position / config.distance+1] = 0;
+                }
+                else if(flag==3){state.target[state.position / config.distance+1] = 0;
+            state.clockwise_request[state.position / config.distance+1] = 0;
+                }
+            }
+            flag1=0;
+            flag=0;
+}
 }
 
 void sstf_primary_request(int direction, int station)
 {
     if(direction == 1)
-        state.clockwise_request[station - 1] = 1;
+        state.clockwise_request[station ] = 1;
     else if(direction == -1)
-        state.counterclockwise_request[station - 1] = 1;
+        state.counterclockwise_request[station ] = 1;
     if(state.state == 0 )
         state.current_target = fflag();
 }
 
 void sstf_secondary_request(int target)
 {
-    state.target[target - 1] = 1;
+    state.target[target ] = 1;
     if(state.state == 0)
         state.current_target = fflag();
 }

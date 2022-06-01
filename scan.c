@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "list.h"
 #include "definition.h"
 #include "dispatcher.h"
 
@@ -35,25 +34,37 @@ void scan_clock_tick()
     state.time++;
     switch (state.state) {
         case 0: { // no request currently.
+            int station = state.position / config.distance + 1;
+            scan_find_target(station);
+            state.last_state = 0;
+            if (state.state == 1) {
+                state.last_state = 1;
+                scan_counterclockwise_go();
+            } else if (state.state == 3) {
+                state.last_state = 3;
+                scan_clockwise_go();
+            }
             break;
         }
         case 1: { // go counterclockwisely during this second
+            state.last_state = 1;
             scan_counterclockwise_go();
             break;
         }
         case 2: { // stop at a station during this second, ready to start now
             int station = state.position / config.distance + 1;
-            scan_request_complete(station); // complete requests
-            if (state.current_target == station) { // target reached, set next
+            scan_request_complete(station);        // complete requests
+            if (station == state.current_target) { // target reached, set next
                 state.current_target = 0;
                 scan_find_target(station);
             } else { // restore to last_state
                 state.state = state.last_state;
-                state.last_state = 2;
             }
+            state.last_state = 2;
             break;
         }
         case 3: { // go clockwisely during this second
+            state.last_state = 3;
             scan_clockwise_go();
             break;
         }
@@ -67,30 +78,15 @@ void scan_clock_tick()
 // (counter)clockwise request handler
 void scan_primary_request(int direction, int station)
 {
-    int flag = (state.position % config.total_station == 0);
-    int now_station = state.position / config.total_station + 1;
-    flag = flag && state.state == 2 && station == now_station;
+    int now_station = state.position / config.distance + 1;
+    int flag = (state.position % config.distance == 0)
+               && (state.state == 2 || state.state == 0)
+               && (station == now_station);
     if (!flag) {
-        if (direction < 0) {
-            if (state.counterclockwise_request[station] == 1)
-                return;
+        if (direction == -1) {
             state.counterclockwise_request[station] = 1;
-            list_node_new_append(state.requests, station, 0);
-        } else {
-            if (state.clockwise_request[station] == 1)
-                return;
+        } else if (direction == 1) {
             state.clockwise_request[station] = 1;
-            list_node_new_append(state.requests, station, 1);
-        }
-
-        if (state.state == 0) {
-            state.last_state = 0;
-            state.current_target = station;
-            if (less_than_halfway(now_station, state.current_target, 1)) {
-                state.state = 3;
-            } else {
-                state.state = 1;
-            }
         }
     }
 }
@@ -98,63 +94,92 @@ void scan_primary_request(int direction, int station)
 // target request handler
 void scan_secondary_request(int target)
 {
-    int flag = (state.position % config.total_station == 0);
-    int now_station = state.position / config.total_station + 1;
-    flag = flag && state.state == 2 && target == now_station;
+    int now_station = state.position / config.distance + 1;
+    int flag = (state.position % config.distance == 0)
+               && (state.state == 2 || state.state == 0)
+               && (target == now_station);
     if (!flag) {
-        if (state.target[target] == 1)
-            return;
         state.target[target] = 1;
-        list_node_new_append(state.requests, target, 2);
-
-        if (state.state == 0) {
-            state.last_state = 0;
-            state.current_target = target;
-            if (less_than_halfway(now_station, state.current_target, 1)) {
-                state.state = 3;
-            } else {
-                state.state = 1;
-            }
-        }
     }
 }
 
 // complete requests at a station
 void scan_request_complete(int station)
 {
-    if (state.counterclockwise_request[station] == 1) {
-        state.counterclockwise_request[station] = 0;
-        list_node_remove(state.requests, station, 0);
-    }
-    if (state.clockwise_request[station] == 1) {
-        state.clockwise_request[station] = 0;
-        list_node_remove(state.requests, station, 1);
-    }
-    if (state.target[station] == 1) {
-        state.target[station] = 0;
-        list_node_remove(state.requests, station, 2);
-    }
+    state.counterclockwise_request[station] = 0;
+    state.clockwise_request[station] = 0;
+    state.target[station] = 0;
 }
 
 // find and set next target to reach
 void scan_find_target(int station)
 {
-    if (list_length(state.requests) == 0) { // no requests currently
-        state.last_state = 2;
+    int has_requests = 0;
+    for (int i = 1; i <= config.total_station; i++) {
+        if (state.counterclockwise_request[i]
+                || state.clockwise_request[i]
+                || state.target[i]) {
+            has_requests = 1;
+            break;
+        }
+    }
+
+    state.current_target = 0;
+    if (has_requests == 0) { // no requests currently
         state.state = 0;
     } else {
-        state.current_target = list_first_node_get_val(state.requests);
-        if (state.last_state == 1) { // counterclockwise
-            state.last_state = 2;
-            state.state = less_than_halfway(station,
-                                            state.current_target,
-                                            -1) ? 1 : 3;
-        } else if (state.last_state == 3) { // clockwise
-            state.last_state = 2;
-            state.state = less_than_halfway(station,
-                                            state.current_target,
-                                            1) ? 3 : 1;
+        if (state.last_state == 1) {
+            int target = station;
+            while (1) {
+                target--;
+                if (target == 0) {
+                    target = config.total_station;
+                }
+                if (state.counterclockwise_request[target]
+                        + state.clockwise_request[target]
+                        + state.target[target] >= 1) {
+                    state.current_target = target;
+                    break;
+                }
+            }
+        } else if (state.last_state == 3) {
+            int target = station;
+            while (1) {
+                target++;
+                if (target == config.total_station + 1) {
+                    target = 1;
+                }
+                if (state.counterclockwise_request[target]
+                        + state.clockwise_request[target]
+                        + state.target[target] >= 1) {
+                    state.current_target = target;
+                    break;
+                }
+            }
+        } else {
+            int distance = 1;
+            while (distance <= config.total_station / 2) {
+                int counter_target = (station - 1 + config.total_station
+                                      - distance) % config.total_station + 1;
+                int target = (station - 1 + distance) % config.total_station + 1;
+                if (state.counterclockwise_request[target]
+                        + state.clockwise_request[target]
+                        + state.target[target] >= 1) {
+                    state.current_target = target;
+                    break;
+                }
+                if (state.counterclockwise_request[counter_target]
+                        + state.clockwise_request[counter_target]
+                        + state.target[counter_target] >= 1) {
+                    state.current_target = counter_target;
+                    break;
+                }
+                ++distance;
+            }
         }
+        state.state = less_than_halfway(station,
+                                        state.current_target,
+                                        1) ? 3 : 1;
     }
 }
 

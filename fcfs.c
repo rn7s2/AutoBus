@@ -10,7 +10,7 @@ void fcfs_clock_tick()
     state.time++;// Add time
     switch (state.state) {
         case 1: { // Go counterclockwisely
-            state.position--;// decrease position
+            state.position--;// Decrease position
             if (state.position < 0)
                 state.position = config.total_station * config.distance - 1;
             if (state.position % config.distance == 0) { // at a station
@@ -93,8 +93,8 @@ void fcfs_clock_tick()
 
 void fcfs_primary_request(int direction, int station)
 {
-    int flag = (state.position % config.total_station == 0);
-    int now_station = state.position / config.total_station + 1;
+    int flag = (state.position % config.distance == 0);
+    int now_station = state.position / config.distance + 1;
     flag = flag && state.state == 2 && station == now_station;
     if (!flag) {
         if (direction < 0) {
@@ -123,8 +123,8 @@ void fcfs_primary_request(int direction, int station)
 
 void fcfs_secondary_request(int target)
 {
-    int flag = (state.position % config.total_station == 0);
-    int now_station = state.position / config.total_station + 1;
+    int flag = (state.position % config.distance == 0);
+    int now_station = state.position / config.distance + 1;
     flag = flag && state.state == 2 && target == now_station;
     if (!flag) {
         if (state.target[target] == 1)

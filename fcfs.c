@@ -26,44 +26,36 @@ void fcfs_clock_tick()
         }
         case 2: { // stop at a station during this second, ready to start now
             int station = state.position / config.distance + 1;
-            if (state.counterclockwise_request[station] == 1) {
+            int type = list_first_node_get_type(state.requests);
+            if (type == 0) {
                 state.counterclockwise_request[station] = 0;
                 list_node_remove(state.requests, station, 0);
-            }
-            if (state.clockwise_request[station] == 1) {
+            } else if (type == 1) {
                 state.clockwise_request[station] = 0;
                 list_node_remove(state.requests, station, 1);
-            }
-            if (state.target[station] == 1) {
+            } else if (type == 2) {
                 state.target[station] = 0;
                 list_node_remove(state.requests, station, 2);
             }
 
+            // check the list to complete all requests that are at the same station
+            // TODO
+
             // target reached, set next one
             if (state.current_target == station) {
-                state.current_target = -1;
+                state.current_target = 0;
                 if (list_length(state.requests) == 0) { // no requests currently
                     state.last_state = 2;
                     state.state = 0;
                 } else {
                     state.current_target
                         = list_first_node_get_val(state.requests);
-                    if (state.last_state == 1) { // counterclockwise
-                        state.last_state = 2;
-                        if (less_than_halfway(station,
-                                              state.current_target, -1)) {
-                            state.state = 1;
-                        } else {
-                            state.state = 3;
-                        }
-                    } else if (state.last_state == 3) { // clockwise
-                        state.last_state = 2;
-                        if (less_than_halfway(station,
-                                              state.current_target, 1)) {
-                            state.state = 3;
-                        } else {
-                            state.state = 1;
-                        }
+                    state.last_state = 2;
+                    if (less_than_halfway(station,
+                                          state.current_target, -1)) {
+                        state.state = 1;
+                    } else {
+                        state.state = 3;
                     }
                 }
             } else {
@@ -108,6 +100,7 @@ void fcfs_primary_request(int direction, int station)
     if (state.state == 0) {
         state.last_state = 0;
         state.current_target = station;
+        int now_station = state.position / config.distance + 1;
         if (less_than_halfway(now_station, state.current_target, 1)) {
             state.state = 3;
         } else {
@@ -126,6 +119,7 @@ void fcfs_secondary_request(int target)
     if (state.state == 0) {
         state.last_state = 0;
         state.current_target = target;
+        int now_station = state.position / config.distance + 1;
         if (less_than_halfway(now_station, state.current_target, 1)) {
             state.state = 3;
         } else {

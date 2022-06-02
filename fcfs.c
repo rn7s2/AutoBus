@@ -1,4 +1,4 @@
-#include "list.h"                                                               //2022.5.27 SunZhengjun
+#include "list.h"
 #include "definition.h"
 #include "dispatcher.h"
 
@@ -7,28 +7,24 @@ extern State state;
 
 void fcfs_clock_tick()
 {
-    state.time++; // Add time
+    state.time++;// Add time
     switch (state.state) {
         case 1: { // Go counterclockwisely
-            state.position--; // decrease position
+            state.position--;// decrease position
             if (state.position < 0)
                 state.position = config.total_station * config.distance - 1;
             if (state.position % config.distance == 0) { // at a station
-                //Calculate position
+            //Calculate position
                 int station = state.position / config.distance + 1;
-                int current_request_val =  list_first_node_get_val(state.requests);
-                int need_to_stop = ((station ==
-                                     state.current_target)           //If this station is either current_target
-                                    + (station == current_request_val) >=
-                                    1 ); //or current_request , we stop .
+                int need_to_stop = ( station == state.current_target);
                 if (need_to_stop == 1) {
-                    state.last_state = 1;                                       //Change the state
-                    state.state = 2;
+                    state.last_state = 1;
+                    state.state = 2;  //Change the state
                 }
             }
             break;
         }
-        case 2: {                                                               // Stop at a station during this second
+        case 2: { // stop at a station during this second, ready to start now
             int station = state.position / config.distance + 1;
             if (state.counterclockwise_request[station] == 1) {
                 state.counterclockwise_request[station] = 0;
@@ -50,13 +46,25 @@ void fcfs_clock_tick()
                     state.last_state = 2;
                     state.state = 0;
                 } else {
-                    state.current_target = list_first_node_get_val(state.requests);
-                    state.last_state = 2;
-                    int current_direction = list_first_node_get_type(state.requests);
-                    if(current_direction == 0)
-                        state.state = 1;
-                    if(current_direction == 1)
-                        state.state = 3;
+                    state.current_target
+                        = list_first_node_get_val(state.requests);
+                    if (state.last_state == 1) { // counterclockwise
+                        state.last_state = 2;
+                        if (less_than_halfway(station,
+                                              state.current_target, -1)) {
+                            state.state = 1;
+                        } else {
+                            state.state = 3;
+                        }
+                    } else if (state.last_state == 3) { // clockwise
+                        state.last_state = 2;
+                        if (less_than_halfway(station,
+                                              state.current_target, 1)) {
+                            state.state = 3;
+                        } else {
+                            state.state = 1;
+                        }
+                    }
                 }
             } else {
                 state.state = state.last_state;
@@ -64,20 +72,18 @@ void fcfs_clock_tick()
             }
             break;
         }
-        case 3: { // Go clockwisely
+        case 3: { // go clockwisely during this second
             state.position++;
             if (state.position >= config.total_station * config.distance)
                 state.position = 0;
             if (state.position % config.distance == 0) { // at a station
                 int station = state.position / config.distance + 1;
-                int need_to_stop = ((station == state.current_target)
-                                    + (station == list_first_node_get_val(state.requests)) >= 1 );
+                int need_to_stop = ( station == state.current_target);
                 if (need_to_stop == 1) {
                     state.last_state = 3;
                     state.state = 2;
                 }
             }
-
             break;
         }
         default:
@@ -85,30 +91,55 @@ void fcfs_clock_tick()
     }
 }
 
-
 void fcfs_primary_request(int direction, int station)
 {
-    if (direction < 0) {
-        state.counterclockwise_request[station] = 1;
-        list_node_new_append(state.requests, station, 0);
-    } else {
-        state.clockwise_request[station] = 1;
-        list_node_new_append(state.requests, station, 1);
-    }
+    int flag = (state.position % config.total_station == 0);
+    int now_station = state.position / config.total_station + 1;
+    flag = flag && state.state == 2 && station == now_station;
+    if (!flag) {
+        if (direction < 0) {
+            if (state.counterclockwise_request[station] == 1)
+                return;
+            state.counterclockwise_request[station] = 1;
+            list_node_new_append(state.requests, station, 0);
+        } else {
+            if (state.clockwise_request[station] == 1)
+                return;
+            state.clockwise_request[station] = 1;
+            list_node_new_append(state.requests, station, 1);
+        }
 
-    if (state.state == 0) {
-        state.last_state = 0;
-        state.current_target = station;
+        if (state.state == 0) {
+            state.last_state = 0;
+            state.current_target = station;
+            if (less_than_halfway(now_station, state.current_target, 1)) {
+                state.state = 3;
+            } else {
+                state.state = 1;
+            }
+        }
     }
 }
 
 void fcfs_secondary_request(int target)
 {
-    state.target[target] = 1;
-    list_node_new_append(state.requests, target, 2);
+    int flag = (state.position % config.total_station == 0);
+    int now_station = state.position / config.total_station + 1;
+    flag = flag && state.state == 2 && target == now_station;
+    if (!flag) {
+        if (state.target[target] == 1)
+            return;
+        state.target[target] = 1;
+        list_node_new_append(state.requests, target, 2);
 
-    if (state.state == 0) {
-        state.last_state = 0;
-        state.current_target = target;
+        if (state.state == 0) {
+            state.last_state = 0;
+            state.current_target = target;
+            if (less_than_halfway(now_station, state.current_target, 1)) {
+                state.state = 3;
+            } else {
+                state.state = 1;
+            }
+        }
     }
 }

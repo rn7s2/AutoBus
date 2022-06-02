@@ -40,7 +40,48 @@ void fcfs_clock_tick()
 
             // check the list to complete all requests that are at the same station
             // TODO
-
+     /*          int typee = 0 ;
+             int val = 0 ;
+             state.requests = state.requests->next;//initialize
+             for(;;){
+                val = state.requests->val ;
+                if( val == station)
+                {
+                    typee = state.requests->type ;
+                    if (type == 0) {
+                        state.counterclockwise_request[station] = 0;
+                        
+                    } else if (type == 1) {
+                        state.clockwise_request[station] = 0;
+                       
+                    } else if (type == 2) {
+                        state.target[station] = 0;
+                        
+                    }
+                    state.requests = state.requests->next;
+                }else{
+                    break;
+                }
+            }            */
+           
+           
+           /* struct State* p = state.requests;
+            while (p) {
+                    if (p->val == station ) {
+                         p = p->requests->next;
+                        }else{
+                             break;      
+                        }
+                    }
+            */
+            while (state.requests) {
+                    if (state.requests->val == station ) {
+                        state.requests= state.requests->next;
+                        }else{
+                             break;      
+                        }
+                    }
+            
             // target reached, set next one
             if (state.current_target == station) {
                 state.current_target = 0;

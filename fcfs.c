@@ -98,9 +98,13 @@ void fcfs_primary_request(int direction, int station)
     flag = flag && state.state == 2 && station == now_station;
     if (!flag) {
         if (direction < 0) {
+            if (state.counterclockwise_request[station] == 1)
+                return;
             state.counterclockwise_request[station] = 1;
             list_node_new_append(state.requests, station, 0);
         } else {
+            if (state.clockwise_request[station] == 1)
+                return;
             state.clockwise_request[station] = 1;
             list_node_new_append(state.requests, station, 1);
         }
@@ -123,6 +127,8 @@ void fcfs_secondary_request(int target)
     int now_station = state.position / config.distance + 1;
     flag = flag && state.state == 2 && target == now_station;
     if (!flag) {
+        if (state.target[target] == 1)
+            return;
         state.target[target] = 1;
         list_node_new_append(state.requests, target, 2);
 

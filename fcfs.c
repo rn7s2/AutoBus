@@ -40,7 +40,7 @@ void fcfs_clock_tick()
             while (head) {
                 if (head->val == station) {
                     int request_type = head->type;
-                    head = state.requests->next;
+                    head = head->next;
                     if (request_type == 0) {
                         state.counterclockwise_request[station] = 0;
                     } else if (request_type == 1) {

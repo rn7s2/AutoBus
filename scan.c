@@ -1,3 +1,10 @@
+/***************************************************************************************************
+ * Filename:    scan.c
+ * Author:      雷瑞祺
+ * Purpose:     Implement strategy SCAN.
+ * Last update: 2022-06-05
+ ***************************************************************************************************/
+
 #include <stdio.h>
 #include "definition.h"
 #include "dispatcher.h"
@@ -9,17 +16,19 @@ extern State state;
 int less_than_halfway(int from, int to, int direction)
 {
     int t = config.total_station;
-    if (direction < 0) {
+    if (direction < 0) { // go counterclockwisely from 'from' to 'to'
         int h = (config.total_station - 1) / 2;
-        int end_point = ((from - 1) + t - h) % t + 1;
+        int end_point = ((from - 1) + t - h) % t + 1; // halfway station id
+        // judge if 'to' falls in valid intervals
         if (end_point < from) {
             return end_point <= to && to <= from;
         } else {
             return (end_point <= to && to <= t) || (1 <= to && to <= from);
         }
-    } else {
+    } else { // go clockwisely from 'from' to 'to'
         int h = config.total_station / 2;
-        int end_point = ((from - 1) + h) % t + 1;
+        int end_point = ((from - 1) + h) % t + 1; // halfway station id
+        // judge if 'to' falls in valid intervals
         if (end_point > from) {
             return from <= to && to <= end_point;
         } else {
@@ -32,15 +41,15 @@ int less_than_halfway(int from, int to, int direction)
 void scan_clock_tick()
 {
     state.time++;
-    switch (state.state) {
+    switch (state.state) { // dispatch according to current state
         case 0: { // no request currently.
             int station = state.position / config.distance + 1;
             scan_find_target(station);
             state.last_state = 0;
-            if (state.state == 1) {
+            if (state.state == 1) { // start counterclockwisely immediately
                 state.last_state = 1;
                 scan_counterclockwise_go();
-            } else if (state.state == 3) {
+            } else if (state.state == 3) { // start clockwisely immediately
                 state.last_state = 3;
                 scan_clockwise_go();
             }
@@ -57,7 +66,7 @@ void scan_clock_tick()
             if (station == state.current_target) { // target reached, set next
                 state.current_target = 0;
                 scan_find_target(station);
-            } else { // restore to last_state
+            } else { // restore to last_state, continue going
                 state.state = state.last_state;
             }
             state.last_state = 2;
@@ -80,10 +89,10 @@ void scan_primary_request(int direction, int station)
 {
     int now_station = state.position / config.distance + 1;
     int flag = (state.position % config.distance == 0)
-               && (state.state == 2 || state.state == 0)
-               && (station == now_station);
+        && (state.state == 2 || state.state == 0)
+        && (station == now_station); // whether we could ignore this request
     if (!flag) {
-        if (direction == -1) {
+        if (direction == -1) { // set station request
             state.counterclockwise_request[station] = 1;
         } else if (direction == 1) {
             state.clockwise_request[station] = 1;
@@ -96,10 +105,10 @@ void scan_secondary_request(int target)
 {
     int now_station = state.position / config.distance + 1;
     int flag = (state.position % config.distance == 0)
-               && (state.state == 2 || state.state == 0)
-               && (target == now_station);
+        && (state.state == 2 || state.state == 0)
+        && (target == now_station); // whether we could ignore this request
     if (!flag) {
-        state.target[target] = 1;
+        state.target[target] = 1; // set target request
     }
 }
 
@@ -111,16 +120,14 @@ void scan_request_complete(int station)
     state.target[station] = 0;
 }
 
+// judge whether a station has requests
 int has_request(int station)
 {
-    if (state.counterclockwise_request[station]
-            || state.clockwise_request[station]
-            || state.target[station]) {
-        return 1;
-    }
-    return 0;
+    int s = station;
+    return state.counterclockwise_request[s] || state.clockwise_request[s] || state.target[s];
 }
 
+// judge whether all stations has requests currently
 int has_requests()
 {
     int flag = 0;
@@ -133,6 +140,7 @@ int has_requests()
     return flag;
 }
 
+// find the target when the bus is not moving
 void find_init_target(int station)
 {
     int distance = 1;
@@ -140,11 +148,11 @@ void find_init_target(int station)
         int target = (station - 1 + distance) % config.total_station + 1;
         int counter_target = (station - 1 + config.total_station
                               - distance) % config.total_station + 1;
-        if (has_request(target)) {
+        if (has_request(target)) { // found clockwisely
             state.current_target = target;
             break;
         }
-        if (has_request(counter_target)) {
+        if (has_request(counter_target)) { // found counterclockwisely
             state.current_target = counter_target;
             break;
         }
@@ -158,41 +166,42 @@ void scan_find_target(int station)
     state.current_target = 0;
     if (has_requests() == 0) { // no requests currently
         state.state = 0;
-    } else {
+    } else { // has requests now
         int target = station;
-        while (1) {
-            if (state.last_state == 1) {
+        while (1) { // find target following the current running direction
+            if (state.last_state == 1) { // currently going counterclockwisely
                 target--;
                 if (target == 0) {
                     target = config.total_station;
                 }
-            } else if (state.last_state == 3) {
+            } else if (state.last_state == 3) { // currently going clockwisely
                 target++;
                 if (target == config.total_station + 1) {
                     target = 1;
                 }
-            } else {
+            } else { // not moving, should find init target later
                 break;
             }
-            if (has_request(target)) {
+            if (has_request(target)) { // found target station
                 state.current_target = target;
                 break;
             }
         }
 
-        if (state.current_target == 0) {
+        if (state.current_target == 0) { // find the target when the bus is not moving
             find_init_target(station);
         }
 
         state.state = less_than_halfway(station,
                                         state.current_target,
-                                        1) ? 3 : 1;
+                                        1) ? 3 : 1; // determine the direction
     }
 }
 
 // go counterclockwisely during last second
 void scan_counterclockwise_go()
 {
+    // move position
     state.position--;
     if (state.position < 0)
         state.position = config.total_station * config.distance - 1;
@@ -200,17 +209,17 @@ void scan_counterclockwise_go()
     int at_station = (state.position % config.distance == 0);
     int station = state.position / config.distance + 1;
 
-    if (at_station) {
-        if (has_request(station)) {
-            state.last_state = 1;
-            state.state = 2;
-        }
+    // if at a station and has requests to complete, then park here
+    if (at_station && has_request(station)) {
+        state.last_state = 1;
+        state.state = 2;
     }
 }
 
 // go clockwisely during last second
 void scan_clockwise_go()
 {
+    // move position
     state.position++;
     if (state.position >= config.total_station * config.distance)
         state.position = 0;
@@ -218,10 +227,9 @@ void scan_clockwise_go()
     int at_station = (state.position % config.distance == 0);
     int station = state.position / config.distance + 1;
 
-    if (at_station) {
-        if (has_request(station)) {
-            state.last_state = 3;
-            state.state = 2;
-        }
+    // if at a station and has requests to complete, then park here
+    if (at_station && has_request(station)) {
+        state.last_state = 3;
+        state.state = 2;
     }
 }

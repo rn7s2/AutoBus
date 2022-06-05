@@ -1,3 +1,10 @@
+/******************************************************************************
+ * Filename:    input.c
+ * Author:      王盛宇，雷瑞祺
+ * Purpose:     Implement read_event.
+ * Last update: 2022-05-16
+ ******************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

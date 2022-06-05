@@ -1,3 +1,10 @@
+/******************************************************************************
+ * Filename:    main.c
+ * Author:      雷瑞祺，孙正君
+ * Purpose:     Maintaining the main loop and the config.
+ * Last update: 2022-06-05
+ ******************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +17,8 @@
 Config config;     // 全局配置
 State state;       // 全局状态
 
+// Function: main
+//   Author: 雷瑞祺
 int main(int argc, char *argv[])
 {
     // 初始化状态与读取配置
@@ -52,7 +61,9 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-// 初始化状态
+// Function: init_state
+//   Author: 雷瑞祺
+//  Purpose: 初始化状态
 void init_state()
 {
     state.last_state = -1;
@@ -70,7 +81,9 @@ void init_state()
     config.distance = 2;
 }
 
-// FCFS策略分派
+// Function: fcfs_dispatch
+//   Author: 雷瑞祺
+//  Purpose: FCFS策略分派
 void fcfs_dispatch(Instruction t)
 {
     switch (t.type) {
@@ -92,7 +105,9 @@ void fcfs_dispatch(Instruction t)
     }
 }
 
-// SSTF策略分派
+// Function: sstf_dispatch
+//   Author: 雷瑞祺
+//  Purpose: SSTF策略分派
 void sstf_dispatch(Instruction t)
 {
     switch (t.type) {
@@ -114,7 +129,9 @@ void sstf_dispatch(Instruction t)
     }
 }
 
-// SCAN策略分派
+// Function: scan_dispatch
+//   Author: 雷瑞祺
+//  Purpose: SCAN策略分派
 void scan_dispatch(Instruction t)
 {
     switch (t.type) {
@@ -136,7 +153,9 @@ void scan_dispatch(Instruction t)
     }
 }
 
-// 按策略分派执行
+// Function: dispatch
+//   Author: 雷瑞祺
+//  Purpose: 按策略分派执行
 void dispatch(Instruction t)
 {
     switch (config.strategy) {
@@ -155,7 +174,9 @@ void dispatch(Instruction t)
     }
 }
 
-// 读取配置文件
+// Function: read_config
+//   Author: 孙正君，雷瑞祺
+//  Purpose: 读取配置文件
 void read_config()
 {
     FILE* fin = fopen("dict.dic", "r");

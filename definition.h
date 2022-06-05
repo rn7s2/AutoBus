@@ -1,10 +1,14 @@
-// author: Ruiqi Lei, SunZhengjun
-//   date: 2022/5/15, 2022/5/16
+/******************************************************************************
+ * Filename:    definition.h
+ * Author:      孙正君，雷瑞祺，王盛宇
+ * Purpose:     Provides definitions of data structures.
+ * Last update: 2022-05-20
+ ******************************************************************************/
 
 #ifndef _DEFINITION_H
 #define _DEFINITION_H
 
-#define MAX_LEN 10 + 1             // 最大数组元素数
+#define MAX_LEN 10 + 1         // 最大数组元素数
 #define MAX_BUF 100 + 1
 
 enum Strategy {                // 策略

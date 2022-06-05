@@ -1,3 +1,10 @@
+/******************************************************************************
+ * Filename:    dispatcher.h
+ * Author:      雷瑞祺
+ * Purpose:     Provides prototypes of dispatching functions.
+ * Last update: 2022-06-02
+ ******************************************************************************/
+
 #ifndef _DISPATCHER_H
 #define _DISPATCHER_H
 

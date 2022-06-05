@@ -1,9 +1,9 @@
-/***************************************************************************************************
+/******************************************************************************
  * Filename:    scan.c
  * Author:      雷瑞祺
  * Purpose:     Implement strategy SCAN.
  * Last update: 2022-06-05
- ***************************************************************************************************/
+ ******************************************************************************/
 
 #include <stdio.h>
 #include "definition.h"
@@ -123,8 +123,9 @@ void scan_request_complete(int station)
 // judge whether a station has requests
 int has_request(int station)
 {
-    int s = station;
-    return state.counterclockwise_request[s] || state.clockwise_request[s] || state.target[s];
+    return state.counterclockwise_request[station]
+           || state.clockwise_request[station]
+           || state.target[station];
 }
 
 // judge whether all stations has requests currently

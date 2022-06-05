@@ -12,7 +12,7 @@
 #define MAX_BUF 100 + 1
 
 enum Strategy {                // 策略
-    FCFS,	                   // 先来先服务策略
+    FCFS,                      // 先来先服务策略
     SSTF,                      // 最短寻找时间优先算法
     SCAN                       // 顺便服务策略
 };

@@ -21,9 +21,5 @@ void sstf_secondary_request(int target);
 void scan_clock_tick();
 void scan_primary_request(int direction, int station);
 void scan_secondary_request(int target);
-void scan_request_complete(int station);
-void scan_find_target(int station);
-void scan_counterclockwise_go();
-void scan_clockwise_go();
 
 #endif

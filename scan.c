@@ -37,81 +37,6 @@ int less_than_halfway(int from, int to, int direction)
     }
 }
 
-// clock tick handler
-void scan_clock_tick()
-{
-    state.time++;
-    switch (state.state) { // dispatch according to current state
-        case 0: { // no request currently.
-            int station = state.position / config.distance + 1;
-            scan_find_target(station);
-            state.last_state = 0;
-            if (state.state == 1) { // start counterclockwisely immediately
-                state.last_state = 1;
-                scan_counterclockwise_go();
-            } else if (state.state == 3) { // start clockwisely immediately
-                state.last_state = 3;
-                scan_clockwise_go();
-            }
-            break;
-        }
-        case 1: { // go counterclockwisely during this second
-            state.last_state = 1;
-            scan_counterclockwise_go();
-            break;
-        }
-        case 2: { // stop at a station during this second, ready to start now
-            int station = state.position / config.distance + 1;
-            scan_request_complete(station);        // complete requests
-            if (station == state.current_target) { // target reached, set next
-                state.current_target = 0;
-                scan_find_target(station);
-            } else { // restore to last_state, continue going
-                state.state = state.last_state;
-            }
-            state.last_state = 2;
-            break;
-        }
-        case 3: { // go clockwisely during this second
-            state.last_state = 3;
-            scan_clockwise_go();
-            break;
-        }
-        default: {
-            fprintf(stderr, "Unknown state.\n");
-            break;
-        }
-    }
-}
-
-// (counter)clockwise request handler
-void scan_primary_request(int direction, int station)
-{
-    int now_station = state.position / config.distance + 1;
-    int flag = (state.position % config.distance == 0)
-        && (state.state == 2 || state.state == 0)
-        && (station == now_station); // whether we could ignore this request
-    if (!flag) {
-        if (direction == -1) { // set station request
-            state.counterclockwise_request[station] = 1;
-        } else if (direction == 1) {
-            state.clockwise_request[station] = 1;
-        }
-    }
-}
-
-// target request handler
-void scan_secondary_request(int target)
-{
-    int now_station = state.position / config.distance + 1;
-    int flag = (state.position % config.distance == 0)
-        && (state.state == 2 || state.state == 0)
-        && (target == now_station); // whether we could ignore this request
-    if (!flag) {
-        state.target[target] = 1; // set target request
-    }
-}
-
 // complete requests at a station
 void scan_request_complete(int station)
 {
@@ -189,7 +114,7 @@ void scan_find_target(int station)
             }
         }
 
-        if (state.current_target == 0) { // find the target when the bus is not moving
+        if (state.current_target == 0) { // find target when the bus not moving
             find_init_target(station);
         }
 
@@ -232,5 +157,80 @@ void scan_clockwise_go()
     if (at_station && has_request(station)) {
         state.last_state = 3;
         state.state = 2;
+    }
+}
+
+// clock tick handler
+void scan_clock_tick()
+{
+    state.time++;
+    switch (state.state) { // dispatch according to current state
+        case 0: { // no request currently.
+            int station = state.position / config.distance + 1;
+            scan_find_target(station);
+            state.last_state = 0;
+            if (state.state == 1) { // start counterclockwisely immediately
+                state.last_state = 1;
+                scan_counterclockwise_go();
+            } else if (state.state == 3) { // start clockwisely immediately
+                state.last_state = 3;
+                scan_clockwise_go();
+            }
+            break;
+        }
+        case 1: { // go counterclockwisely during this second
+            state.last_state = 1;
+            scan_counterclockwise_go();
+            break;
+        }
+        case 2: { // stop at a station during this second, ready to start now
+            int station = state.position / config.distance + 1;
+            scan_request_complete(station);        // complete requests
+            if (station == state.current_target) { // target reached, set next
+                state.current_target = 0;
+                scan_find_target(station);
+            } else { // restore to last_state, continue going
+                state.state = state.last_state;
+            }
+            state.last_state = 2;
+            break;
+        }
+        case 3: { // go clockwisely during this second
+            state.last_state = 3;
+            scan_clockwise_go();
+            break;
+        }
+        default: {
+            fprintf(stderr, "Unknown state.\n");
+            break;
+        }
+    }
+}
+
+// (counter)clockwise request handler
+void scan_primary_request(int direction, int station)
+{
+    int now_station = state.position / config.distance + 1;
+    int flag = (state.position % config.distance == 0)
+               && (state.state == 2 || state.state == 0)
+               && (station == now_station); // whether we could ignore it
+    if (!flag) {
+        if (direction == -1) { // set station request
+            state.counterclockwise_request[station] = 1;
+        } else if (direction == 1) {
+            state.clockwise_request[station] = 1;
+        }
+    }
+}
+
+// target request handler
+void scan_secondary_request(int target)
+{
+    int now_station = state.position / config.distance + 1;
+    int flag = (state.position % config.distance == 0)
+               && (state.state == 2 || state.state == 0)
+               && (target == now_station); // whether we could ignore it
+    if (!flag) {
+        state.target[target] = 1; // set target request
     }
 }

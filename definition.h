@@ -9,7 +9,7 @@
 #define _DEFINITION_H
 
 #define MAX_LEN 10 + 1         // 最大数组元素数
-#define MAX_BUF 100 + 1
+#define MAX_BUF 100 + 1        // 最大字符串缓冲区长度
 
 enum Strategy {                // 策略
     FCFS,                      // 先来先服务策略

@@ -96,10 +96,8 @@ void state_change_target() // 确定新目标并依据state.current_target确定
 void state_change_target_new() // 当位于站点时，改变target并更改相关状态
 {
     if(state.state == 1) {
-
         state.current_target++;
     } else if(state.state == 3) {
-
         state.current_target--;
     }
     if ((state.state == 1
@@ -111,7 +109,6 @@ void state_change_target_new() // 当位于站点时，改变target并更改相�
 
         if (state.current_target == 0) {
             flag_target = 1;
-
         }
     } else if ((state.state == 3
                 &&             (state.target[station() + 1] ||
@@ -122,7 +119,6 @@ void state_change_target_new() // 当位于站点时，改变target并更改相�
 
         if (state.current_target == 0) {
             flag_target = 1;
-
         }
     }
 

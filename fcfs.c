@@ -17,6 +17,7 @@ void fcfs_clock_tick()
     state.time++; // Add time
 
     switch (state.state) { // dispatch according to current state
+    
         case 1: { // go counterclockwisely during this second
             fcfs_clockwise_go();
             break;
@@ -55,6 +56,7 @@ void fcfs_clock_tick()
             break;
     }
 }
+
 // (counter)clockwise request handler
 void fcfs_primary_request(int direction, int station)
 {
@@ -82,6 +84,7 @@ void fcfs_primary_request(int direction, int station)
         }
     }
 }
+
 // target request handler
 void fcfs_secondary_request(int target)
 {
@@ -119,6 +122,7 @@ void fcfs_clockwise_go()
     }
     state.last_state = 1;
 }
+
 // go counterclockwisely during last second
 void fcfs_counterclockwise_go()
 {
@@ -134,6 +138,7 @@ void fcfs_counterclockwise_go()
     }
     state.last_state = 3;
 }
+
 // complete requests at a station
 void fcfs_request_complete(int station)
 {
@@ -147,6 +152,7 @@ void fcfs_request_complete(int station)
     }
     list_first_node_remove(state.requests);
 }
+
 // target reached, set next one
 void set_next_target(int station)
 {

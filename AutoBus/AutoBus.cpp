@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <wx/msgdlg.h>
 
 AutoBus::AutoBus()
 {
@@ -54,8 +55,10 @@ void AutoBus::ReadConfig()
 	FILE* fin = fopen("dict.dic", "r");
 	char buf[MAX_BUF] = {};
 
-	if (fin == nullptr)
+	if (fin == nullptr) {
+		wxMessageBox(_("Configuration file not found."));
 		return;
+	}
 
 	while (fgets(buf, MAX_BUF, fin)) {
 		char* right = nullptr;

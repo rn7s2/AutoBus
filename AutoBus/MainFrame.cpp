@@ -67,35 +67,35 @@ MainFrame::MainFrame(const wxString& title)
 	const int spinCtrlX = buttonX + 109;
 	const wxSize spinCtrlSize(73, 30);
 
-	wxButton* buttonTarget = new wxButton(
+	targetButton = new wxButton(
 		this,
 		ButtonTarget,
 		_("Target"),
 		wxPoint(buttonX, 290),
 		buttonSize
 	);
-	wxButton* buttonCounterclockwise = new wxButton(
+	counterclockwiseButton = new wxButton(
 		this,
 		ButtonCounterclockwise,
 		_("Counter"),
 		wxPoint(buttonX, 326),
 		buttonSize
 	);
-	wxButton* buttonClockwise = new wxButton(
+	clockwiseButton = new wxButton(
 		this,
 		ButtonClockwise,
 		_("Clockwise"),
 		wxPoint(buttonX, 362),
 		buttonSize
 	);
-	wxButton* buttonStart = new wxButton(
+	startButton = new wxButton(
 		this,
 		ButtonStart,
 		_("Start"),
 		wxPoint(buttonX, 398),
 		wxSize(180, 30)
 	);
-	wxButton* buttonEnd = new wxButton(
+	endButton = new wxButton(
 		this,
 		ButtonEnd,
 		_("End"),
@@ -141,6 +141,11 @@ MainFrame::MainFrame(const wxString& title)
 	appTimer->Start(1000);
 
 	busTimer = new wxTimer(this, BusTimer);
+
+	targetButton->Disable();
+	counterclockwiseButton->Disable();
+	clockwiseButton->Disable();
+	endButton->Disable();
 }
 
 MainFrame::~MainFrame()
@@ -399,6 +404,11 @@ void MainFrame::OnButtonStart(wxCommandEvent& event)
 		counterclockwiseSpinCtrl->SetRange(1, bus->config.total_station);
 		clockwiseSpinCtrl->SetRange(1, bus->config.total_station);
 		busTimer->Start(1000 / FPS);
+		startButton->Disable();
+		endButton->Enable();
+		targetButton->Enable();
+		counterclockwiseButton->Enable();
+		clockwiseButton->Enable();
 	}
 }
 
@@ -411,6 +421,11 @@ void MainFrame::OnButtonEnd(wxCommandEvent& event)
 	busTimer->Stop();
 	delete bus, bus = nullptr;
 	frames = 0;
+	targetButton->Disable();
+	counterclockwiseButton->Disable();
+	clockwiseButton->Disable();
+	startButton->Enable();
+	endButton->Disable();
 	Refresh();
 }
 

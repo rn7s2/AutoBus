@@ -40,6 +40,11 @@ private:
 
 private:
 	AutoBus* bus = nullptr;
+	wxButton* targetButton = nullptr;
+	wxButton* counterclockwiseButton = nullptr;
+	wxButton* clockwiseButton = nullptr;
+	wxButton* startButton = nullptr;
+	wxButton* endButton = nullptr;
 	wxSpinCtrl* targetSpinCtrl = nullptr;
 	wxSpinCtrl* counterclockwiseSpinCtrl = nullptr;
 	wxSpinCtrl* clockwiseSpinCtrl = nullptr;

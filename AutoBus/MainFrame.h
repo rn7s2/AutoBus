@@ -25,6 +25,7 @@ public:
 	~MainFrame();
 
 private:
+	wxPoint LengthToPoint(int l);
 	void Draw();
 	void OnPaint(wxPaintEvent& event);
 	void OnButtonStart(wxCommandEvent& event);

@@ -11,19 +11,16 @@ bool AutoBus::less_than_halfway(int from, int to, int direction)
 		// judge if 'to' falls in valid intervals
 		if (end_point < from) {
 			return end_point <= to && to <= from;
-		}
-		else {
+		} else {
 			return (end_point <= to && to <= t) || (1 <= to && to <= from);
 		}
-	}
-	else { // go clockwisely from 'from' to 'to'
+	} else { // go clockwisely from 'from' to 'to'
 		int h = config.total_station / 2;
 		int end_point = ((from - 1) + h) % t + 1; // halfway station id
 		// judge if 'to' falls in valid intervals
 		if (end_point > from) {
 			return from <= to && to <= end_point;
-		}
-		else {
+		} else {
 			return (from <= to && to <= t) || (1 <= to && to <= end_point);
 		}
 	}
@@ -84,8 +81,7 @@ void AutoBus::scan_find_target(int station)
 	state.current_target = 0;
 	if (scan_has_requests() == false) { // no requests currently
 		state.state = 0;
-	}
-	else { // has requests now
+	} else { // has requests now
 		int target = station;
 		while (true) { // find target following the current running direction
 			if (state.last_state == 1) { // currently going counterclockwisely
@@ -93,14 +89,12 @@ void AutoBus::scan_find_target(int station)
 				if (target == 0) {
 					target = config.total_station;
 				}
-			}
-			else if (state.last_state == 3) { // currently going clockwisely
+			} else if (state.last_state == 3) { // currently going clockwisely
 				target++;
 				if (target == config.total_station + 1) {
 					target = 1;
 				}
-			}
-			else { // not moving, should find init target later
+			} else { // not moving, should find init target later
 				break;
 			}
 			if (scan_has_request(target)) { // found target station
@@ -161,17 +155,6 @@ void AutoBus::scan_clock_tick()
 	state.time++;
 	switch (state.state) { // dispatch according to current state
 	case 0: { // no request currently.
-		int station = state.position / config.distance + 1;
-		scan_find_target(station);
-		state.last_state = 0;
-		if (state.state == 1) { // start counterclockwisely immediately
-			state.last_state = 1;
-			scan_counterclockwise_go();
-		}
-		else if (state.state == 3) { // start clockwisely immediately
-			state.last_state = 3;
-			scan_clockwise_go();
-		}
 		break;
 	}
 	case 1: { // go counterclockwisely during this second
@@ -185,8 +168,7 @@ void AutoBus::scan_clock_tick()
 		if (station == state.current_target) { // target reached, set next
 			state.current_target = 0;
 			scan_find_target(station);
-		}
-		else { // restore to last_state, continue going
+		} else { // restore to last_state, continue going
 			state.state = state.last_state;
 		}
 		state.last_state = 2;
@@ -214,9 +196,13 @@ void AutoBus::scan_primary_request(int direction, int station)
 	if (!flag) {
 		if (direction == -1) { // set station request
 			state.counterclockwise_request[station] = 1;
-		}
-		else if (direction == 1) {
+		} else if (direction == 1) {
 			state.clockwise_request[station] = 1;
+		}
+
+		if (state.state == 0) { // start immediately
+			scan_find_target(now_station);
+			state.last_state = 0;
 		}
 	}
 }
@@ -230,5 +216,10 @@ void AutoBus::scan_secondary_request(int target)
 		&& (target == now_station); // whether we could ignore it
 	if (!flag) {
 		state.target[target] = 1; // set target request
+
+		if (state.state == 0) { // start immediately
+			scan_find_target(now_station);
+			state.last_state = 0;
+		}
 	}
 }

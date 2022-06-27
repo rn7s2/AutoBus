@@ -403,7 +403,7 @@ void MainFrame::OnButtonStart(wxCommandEvent& event)
 		targetSpinCtrl->SetRange(1, bus->config.total_station);
 		counterclockwiseSpinCtrl->SetRange(1, bus->config.total_station);
 		clockwiseSpinCtrl->SetRange(1, bus->config.total_station);
-		busTimer->Start(1000 / FPS);
+		busTimer->Start(2000 / FPS);
 		startButton->Disable();
 		endButton->Enable();
 		targetButton->Enable();

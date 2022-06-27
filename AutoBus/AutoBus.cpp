@@ -4,10 +4,10 @@
 #include <cstring>
 #include <wx/msgdlg.h>
 
-AutoBus::AutoBus()
+AutoBus::AutoBus(std::string configPath)
 {
 	Init();
-	ReadConfig();
+	ReadConfig(configPath.c_str());
 }
 
 AutoBus::~AutoBus()
@@ -50,9 +50,9 @@ void AutoBus::Init()
 	config.distance = 2;
 }
 
-void AutoBus::ReadConfig()
+void AutoBus::ReadConfig(const char* configPath)
 {
-	FILE* fin = fopen("dict.dic", "r");
+	FILE* fin = fopen(configPath, "r");
 	char buf[MAX_BUF] = {};
 
 	if (fin == nullptr) {

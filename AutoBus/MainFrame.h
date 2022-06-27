@@ -14,8 +14,8 @@ enum ControlID {
 	SpinCtrlTarget,
 	SpinCtrlCounterclockwise,
 	SpinCtrlClockwise,
-	BusTimer,
-	AppTimer
+	AppTimer,
+	BusTimer
 };
 
 class MainFrame : public wxFrame

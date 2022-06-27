@@ -1,6 +1,7 @@
 #pragma once
 
 #include "List.h"
+#include <string>
 
 #define MAX_LEN 10 + 1         // 最大数组元素数
 #define MAX_BUF 100 + 1        // 最大字符串缓冲区长度
@@ -33,13 +34,13 @@ typedef struct {               // 指令
 class AutoBus
 {
 public:
-    AutoBus();
+    AutoBus(std::string configPath);
     ~AutoBus();
     void Dispatch(const Instruction& t);
 
 private:
     void Init();
-    void ReadConfig();
+    void ReadConfig(const char* configPath);
     void DispatchFCFS(const Instruction& t);
     void DispatchSSTF(const Instruction& t);
     void DispatchSCAN(const Instruction& t);

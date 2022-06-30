@@ -224,6 +224,16 @@ void MainFrame::Draw()
 	for (int i = 0; i < bus->config.total_station; i++) {
 		int s = StationToVertex[bus->config.total_station][i];
 		if ((s >= 0 && s <= 2) || (s >= 5 && s <= 7)) {
+			// »­Õ¾µã±àºÅ
+			dc.SetTextForeground(*wxRED);
+			dc.DrawText(
+				wxString::Format(wxT("%d"), i + 1),
+				wxPoint(
+					LengthToPoint(VertexToLength[s]).x - 30,
+					LengthToPoint(VertexToLength[s]).y - 35
+				)
+			);
+			// »­ÆìÖÄ
 			dc.DrawBitmap(
 				flag,
 				wxPoint(
@@ -233,6 +243,14 @@ void MainFrame::Draw()
 				true
 			);
 		} else if (s == 8 || s == 9) {
+			dc.SetTextForeground(*wxRED);
+			dc.DrawText(
+				wxString::Format(wxT("%d"), i + 1),
+				wxPoint(
+					LengthToPoint(VertexToLength[s]).x - 25,
+					LengthToPoint(VertexToLength[s]).y - 25
+				)
+			);
 			dc.DrawBitmap(
 				flag,
 				wxPoint(
@@ -242,6 +260,14 @@ void MainFrame::Draw()
 				true
 			);
 		} else if (s == 3 || s == 4) {
+			dc.SetTextForeground(*wxRED);
+			dc.DrawText(
+				wxString::Format(wxT("%d"), i + 1),
+				wxPoint(
+					LengthToPoint(VertexToLength[s]).x + 25,
+					LengthToPoint(VertexToLength[s]).y - 25
+				)
+			);
 			dc.DrawBitmap(
 				flag,
 				wxPoint(
@@ -403,7 +429,7 @@ void MainFrame::OnButtonStart(wxCommandEvent& event)
 		targetSpinCtrl->SetRange(1, bus->config.total_station);
 		counterclockwiseSpinCtrl->SetRange(1, bus->config.total_station);
 		clockwiseSpinCtrl->SetRange(1, bus->config.total_station);
-		busTimer->Start(2000 / FPS);
+		busTimer->Start(1500 / FPS);
 		startButton->Disable();
 		endButton->Enable();
 		targetButton->Enable();
@@ -421,6 +447,11 @@ void MainFrame::OnButtonEnd(wxCommandEvent& event)
 	busTimer->Stop();
 	delete bus, bus = nullptr;
 	frames = 0;
+	targetSpinCtrl->SetRange(0, 0);
+	counterclockwiseSpinCtrl->SetRange(0, 0);
+	clockwiseSpinCtrl->SetRange(0, 0);
+	counterclockwiseSpinCtrl->SetValue(1);
+	clockwiseSpinCtrl->SetValue(1);
 	targetButton->Disable();
 	counterclockwiseButton->Disable();
 	clockwiseButton->Disable();

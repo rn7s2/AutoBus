@@ -7,7 +7,7 @@
 #include <wx/file.h>
 #include <wx/filedlg.h>
 
-const int FPS = 15;
+const int FPS = 45;
 const int VertexToLength[10] = { 0, 140, 280, 405, 545, 670, 810, 950, 1075, 1215 };
 
 //const wxPoint Vertex[10] = {
@@ -59,6 +59,27 @@ MainFrame::MainFrame(const wxString& title)
 	)
 {
 	wxImage::AddHandler(new wxPNGHandler);
+
+	map = wxBitmap(wxT("Assets/MapFlat.bmp"), wxBITMAP_TYPE_BMP);
+	flag = wxBitmap(wxT("Assets/Flag.png"), wxBITMAP_TYPE_PNG);
+	panel = wxBitmap(wxT("Assets/Panel.bmp"), wxBITMAP_TYPE_BMP);
+	panelStarted = wxBitmap(wxT("Assets/PanelStarted.bmp"), wxBITMAP_TYPE_BMP);
+	for (int i = 0; i < 8; i++)
+		vehicle[i] = wxBitmap(wxString::Format(wxT("Assets/Bus/%d.png"), i), wxBITMAP_TYPE_PNG);
+
+	wxBitmap::Rescale(vehicle[0], wxSize(42, 34));
+	wxBitmap::Rescale(vehicle[1], wxSize(46, 36));
+	wxBitmap::Rescale(vehicle[2], wxSize(42, 34));
+	wxBitmap::Rescale(vehicle[3], wxSize(46, 36));
+	wxBitmap::Rescale(vehicle[4], wxSize(42, 34));
+	wxBitmap::Rescale(vehicle[5], wxSize(46, 36));
+	wxBitmap::Rescale(vehicle[6], wxSize(42, 34));
+	wxBitmap::Rescale(vehicle[7], wxSize(46, 36));
+
+	wxBitmap::Rescale(map, wxSize(800, 561));
+	wxBitmap::Rescale(flag, wxSize(50, 100));
+	wxBitmap::Rescale(panel, wxSize(250, 561));
+	wxBitmap::Rescale(panelStarted, wxSize(250, 561));
 
 	SetBackgroundColour(*wxWHITE);
 
@@ -163,22 +184,22 @@ wxPoint MainFrame::LengthToPoint(int l)
 	if (l >= 0 && l < 280) {
 		return wxPoint(220 + l, 160);
 	} else if (l >= 280 && l < 405) {
-		double n = (l - 280) / fabs(6 * 6 + 11 * 11);
+		double n = (l - 280.0) / fabs(6.0 * 6 + 11 * 11);
 		return wxPoint(500 + 110 * n, 160 + 60 * n);
 	} else if (l >= 405 && l < 545) {
 		return wxPoint(610, 220 + l - 405);
 	} else if (l >= 545 && l < 670) {
-		double n = (l - 545) / fabs(6 * 6 + 11 * 11);
+		double n = (l - 545.0) / fabs(6.0 * 6 + 11 * 11);
 		return wxPoint(610 - 110 * n, 360 + 60 * n);
 	} else if (l >= 670 && l < 950) {
 		return wxPoint(500 - (l - 670), 420);
 	} else if (l >= 950 && l < 1075) {
-		double n = (l - 950) / fabs(6 * 6 + 11 * 11);
+		double n = (l - 950.0) / fabs(6.0 * 6 + 11 * 11);
 		return wxPoint(220 - 110 * n, 420 - 60 * n);
 	} else if (l >= 1075 && l < 1215) {
 		return wxPoint(112, 360 - (l - 1075));
 	} else if (l >= 1215 && l <= 1355) {
-		double n = (l - 1215) / fabs(6 * 6 + 11 * 11);
+		double n = (l - 1215.0) / fabs(6.0 * 6 + 11 * 11);
 		return wxPoint(112 + 110 * n, 220 - 60 * n);
 	}
 	return wxPoint(-1, -1);
@@ -186,39 +207,12 @@ wxPoint MainFrame::LengthToPoint(int l)
 
 void MainFrame::Draw()
 {
-	wxBitmap map(wxT("Assets/MapFlat.bmp"), wxBITMAP_TYPE_BMP);
-	wxBitmap flag(wxT("Assets/Flag.png"), wxBITMAP_TYPE_PNG);
-	wxBitmap panel(wxT("Assets/PanelStarted.bmp"), wxBITMAP_TYPE_BMP);
-	wxBitmap vehicle[8] = {
-		wxBitmap(wxT("Assets/Bus/0.png"), wxBITMAP_TYPE_PNG),
-		wxBitmap(wxT("Assets/Bus/1.png"), wxBITMAP_TYPE_PNG),
-		wxBitmap(wxT("Assets/Bus/2.png"), wxBITMAP_TYPE_PNG),
-		wxBitmap(wxT("Assets/Bus/3.png"), wxBITMAP_TYPE_PNG),
-		wxBitmap(wxT("Assets/Bus/4.png"), wxBITMAP_TYPE_PNG),
-		wxBitmap(wxT("Assets/Bus/5.png"), wxBITMAP_TYPE_PNG),
-		wxBitmap(wxT("Assets/Bus/6.png"), wxBITMAP_TYPE_PNG),
-		wxBitmap(wxT("Assets/Bus/7.png"), wxBITMAP_TYPE_PNG)
-	};
-	wxBitmap::Rescale(vehicle[0], wxSize(42, 34));
-	wxBitmap::Rescale(vehicle[1], wxSize(46, 36));
-	wxBitmap::Rescale(vehicle[2], wxSize(42, 34));
-	wxBitmap::Rescale(vehicle[3], wxSize(46, 36));
-	wxBitmap::Rescale(vehicle[4], wxSize(42, 34));
-	wxBitmap::Rescale(vehicle[5], wxSize(46, 36));
-	wxBitmap::Rescale(vehicle[6], wxSize(42, 34));
-	wxBitmap::Rescale(vehicle[7], wxSize(46, 36));
-
-	// Rescale bitmaps
-	wxBitmap::Rescale(map, wxSize(800, 561));
-	wxBitmap::Rescale(flag, wxSize(50, 100));
-	wxBitmap::Rescale(panel, wxSize(250, 561));
-
 	wxClientDC clientDC(this);
 	wxBufferedDC dc(&clientDC, wxSize(1000, 600));
 
 	// Draw map and panel
 	dc.DrawBitmap(map, wxPoint(-10, 0));
-	dc.DrawBitmap(panel, wxPoint(734, 0));
+	dc.DrawBitmap(panelStarted, wxPoint(734, 0));
 
 	// Draw stations
 	for (int i = 0; i < bus->config.total_station; i++) {
@@ -392,12 +386,6 @@ void MainFrame::Draw()
 
 void MainFrame::OnPaint(wxPaintEvent& event)
 {
-	wxBitmap map(wxT("Assets/MapFlat.bmp"), wxBITMAP_TYPE_BMP);
-	wxBitmap panel(wxT("Assets/Panel.bmp"), wxBITMAP_TYPE_BMP);
-
-	wxBitmap::Rescale(map, wxSize(800, 561));
-	wxBitmap::Rescale(panel, wxSize(250, 561));
-
 	wxBufferedPaintDC dc(this);
 	dc.DrawBitmap(map, wxPoint(-10, 0));
 	dc.DrawBitmap(panel, wxPoint(734, 0));

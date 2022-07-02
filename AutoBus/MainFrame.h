@@ -4,6 +4,7 @@
 #include <wx/frame.h>
 #include <wx/spinctrl.h>
 #include <wx/timer.h>
+#include <wx/bitmap.h>
 
 enum ControlID {
 	ButtonTarget = wxID_HIGHEST + 1,
@@ -51,4 +52,9 @@ private:
 	wxTimer* appTimer = nullptr;
 	wxTimer* busTimer = nullptr;
 	int frames = 0, time = 0;
+
+	wxBitmap map;
+	wxBitmap flag;
+	wxBitmap panel, panelStarted;
+	wxBitmap vehicle[8];
 };

@@ -151,7 +151,6 @@ void AutoBus::sstf_clock_tick()
 		&& state.last_state != 0) {
 		sstf_state_change_target_new();
 	}
-	// ¸üÐÂ×´Ì¬
 	if (state.position % config.distance == 0 && state.last_state == 2) {
 		if (flag_target == 1) {
 			state.counterclockwise_request[sstf_station() + 1] = 0;
@@ -171,8 +170,18 @@ void AutoBus::sstf_clock_tick()
 		flag_target = 0;
 		flag_passrequest = 0;
 	}
+	if (state.position % config.distance == 0 && state.state == 0) {
+		if (state.target[sstf_station() + 1] == 1) {
+			state.target[sstf_station() + 1] = 0;
+		}
+		if (state.clockwise_request[sstf_station() + 1] == 1) {
+			state.clockwise_request[sstf_station() + 1] = 0;
+		}
+		if (state.counterclockwise_request[sstf_station() + 1] == 1) {
+			state.counterclockwise_request[sstf_station() + 1] = 0;
+		}
+	}
 }
-
 void AutoBus::sstf_primary_request(int direction, int station)
 {
 	if (direction == 1) {
